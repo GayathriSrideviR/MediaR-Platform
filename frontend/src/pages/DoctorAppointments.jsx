@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_BASE } from "../config/api";
@@ -9,14 +9,14 @@ export default function DoctorAppointment() {
   const doctorId = localStorage.getItem("user_id");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
-
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async () => {
     const res = await axios.get(`${API_BASE}/api/appointment/doctor/${doctorId}`);
     setAppointments(res.data);
-  };
+  }, [doctorId]);
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [fetchAppointments]);
 
   const acceptAppointment = async (id) => {
     await axios.put(`${API_BASE}/api/appointment/accept/${id}`);
