@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>AR X-Ray Viewer</title>
+
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+</head>
+
+<body style="margin:0; overflow:hidden;">
+  <a-scene embedded>
+    <a-camera position="0 0 0"></a-camera>
+
+    <a-image
+      id="xray"
+      position="0 0 -2"
+      width="1.5"
+      height="2"
+      opacity="0.95"
+    ></a-image>
+
+    <a-text
+      id="label"
+      position="0 -1.4 -2"
+      align="center"
+      width="4"
+      color="red"
+    ></a-text>
+  </a-scene>
+  
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const img = params.get("img");
+    const res = params.get("res");
+
+    const xray = document.querySelector("#xray");
+    const label = document.querySelector("#label");
+
+    xray.setAttribute("src", img);
+    label.setAttribute("value", `Diagnosis: ${res}`);
+
+    // Mouse drag rotation
+    let isDragging = false;
+    let prevX = 0;
+    let prevY = 0;
+    let rotation = { x: 0, y: 0 };
+
+    document.addEventListener("mousedown", e => {
+      isDragging = true;
+      prevX = e.clientX;
+      prevY = e.clientY;
+    });
+
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+    });
+
+    document.addEventListener("mousemove", e => {
+      if (!isDragging) return;
+
+      const dx = e.clientX - prevX;
+      const dy = e.clientY - prevY;
+
+      rotation.y += dx * 0.3;
+      rotation.x += dy * 0.3;
+
+      xray.setAttribute(
+        "rotation",
+        `${rotation.x} ${rotation.y} 0`
+      );
+
+      prevX = e.clientX;
+      prevY = e.clientY;
+    });
+  </script>
+</body>
+</html>
