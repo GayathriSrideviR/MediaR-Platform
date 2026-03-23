@@ -13,20 +13,55 @@ const userRoutes = require("./routes/users");
 const aiRoutes = require("./routes/ai");
 
 const PORT = Number(process.env.PORT || 5000);
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "*";
+
+const normalizeOrigin = (origin) => String(origin || "").trim().replace(/\/+$/, "");
+const configuredOrigins = String(process.env.CLIENT_ORIGIN || "*")
+  .split(",")
+  .map(normalizeOrigin)
+  .filter(Boolean);
+
+const allowAnyOrigin =
+  configuredOrigins.length === 0 ||
+  configuredOrigins.includes("*");
+
+const isAllowedOrigin = (origin) => {
+  if (allowAnyOrigin) return true;
+  if (!origin) return true;
+  return configuredOrigins.includes(normalizeOrigin(origin));
+};
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (isAllowedOrigin(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+};
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: CLIENT_ORIGIN,
-    methods: ["GET", "POST"],
-  },
+  cors: corsOptions,
 });
 
-app.use(cors({ origin: CLIENT_ORIGIN }));
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ extended: true, limit: "25mb" }));
+app.get("/", (_req, res) => {
+  res.json({
+    status: "ok",
+    service: "mediar-backend",
+  });
+});
+app.get("/api/health", (_req, res) => {
+  res.json({
+    status: "ok",
+    service: "mediar-backend",
+    allowedOrigins: allowAnyOrigin ? ["*"] : configuredOrigins,
+  });
+});
 app.use("/api/patient", patientRoutes);
 app.use("/api/doctor", doctorRoutes);
 app.use("/api/appointment", appointmentRoutes);
