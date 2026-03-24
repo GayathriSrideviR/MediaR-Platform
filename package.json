@@ -1,0 +1,11 @@
+{
+  "name": "mediar-platform",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "install:backend": "npm --prefix backend install",
+    "install:frontend": "npm --prefix frontend install",
+    "postinstall": "npm run install:backend",
+    "start": "npm --prefix backend start"
+  }
+}
