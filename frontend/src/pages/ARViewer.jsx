@@ -189,7 +189,7 @@ const ARViewer = () => {
         <div>F1-score: {incomingF1.toFixed(2)}%</div>
         <div>Mucus/Asthma risk: {getMucusAsthmaRisk().toFixed(2)}%</div>
         <div style={{ marginTop: "6px", fontSize: "12px", opacity: 0.9 }}>
-          P(COVID): {Number(incomingClassProbabilities["COVID-19"] || 0).toFixed(2)}% | P(Viral Pneumonia):{" "}
+          P(COVID-19): {Number(incomingClassProbabilities["COVID-19"] || 0).toFixed(2)}% | P(Viral Pneumonia):{" "}
           {Number(incomingClassProbabilities["Viral Pneumonia"] || 0).toFixed(2)}% | P(Normal):{" "}
           {Number(incomingClassProbabilities.Normal || 0).toFixed(2)}%
         </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_BASE } from "../config/api";
+import { buildXrayFormData } from "../utils/xrayAnalysis";
 
 export default function BookAppointment() {
   const storedName = localStorage.getItem("name") || "";
@@ -41,10 +42,7 @@ export default function BookAppointment() {
     });
 
   const analyzeXray = async (file) => {
-    const analysisForm = new FormData();
-    analysisForm.append("file", file);
-    analysisForm.append("patient_id", patientId);
-
+    const analysisForm = await buildXrayFormData(file, patientId);
     const res = await axios.post(`${API_BASE}/api/ai/predict`, analysisForm);
     return res.data;
   };

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { API_BASE } from "../config/api";
+import { buildXrayFormData } from "../utils/xrayAnalysis";
 import {
   Chart as ChartJS,
   BarElement,
@@ -50,16 +51,14 @@ const AIAnalysis = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("patient_id", localStorage.getItem("user_id") || "");
-
     try {
       setLoading(true);
+      const formData = await buildXrayFormData(file, localStorage.getItem("user_id") || "");
       const res = await axios.post(`${API_BASE}/api/ai/predict`, formData);
       setResult(res.data);
     } catch (err) {
-      alert("AI backend error");
+      console.error("AI analysis request failed:", err);
+      alert(err.response?.data?.message || err.message || "AI backend error");
     } finally {
       setLoading(false);
     }
@@ -69,12 +68,12 @@ const AIAnalysis = () => {
     if (!result?.class_probabilities) return null;
     const p = result.class_probabilities;
     return {
-      labels: ["COVID-19", "Normal", "Viral Pneumonia"],
+      labels: ["COVID-19", "Viral Pneumonia", "Normal"],
       datasets: [
         {
           label: "Class Confidence (%)",
-          data: [p["COVID-19"] || 0, p["Normal"] || 0, p["Viral Pneumonia"] || 0],
-          backgroundColor: ["#ef4444", "#22c55e", "#f97316"],
+          data: [p["COVID-19"] || 0, p["Viral Pneumonia"] || 0, p.Normal || 0],
+          backgroundColor: ["#ef4444", "#f97316", "#22c55e"],
         },
       ],
     };
@@ -144,6 +143,7 @@ const AIAnalysis = () => {
             <p className="text-md mt-1">Confidence: {Number(result.confidence).toFixed(2)}%</p>
             <p className="text-md mt-1">Precision: {Number(result.precision).toFixed(2)}%</p>
             <p className="text-md mt-1">Recall: {Number(result.recall).toFixed(2)}%</p>
+            <p className="text-md mt-1">F1-score: {Number(result.f1_score).toFixed(2)}%</p>
             <p className="text-md mt-1">
               Asthma/Mucus Risk: {Number(result.asthma_mucus_risk || 0).toFixed(2)}%
             </p>

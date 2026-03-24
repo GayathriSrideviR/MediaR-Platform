@@ -86,7 +86,7 @@ export default function DoctorDashboard() {
             <p className="text-xs text-teal-700 font-semibold uppercase">Module</p>
             <h3 className="text-xl font-semibold mt-1">AI Diagnostics</h3>
             <p className="text-slate-600 mt-2">
-              Run chest X-ray AI prediction for COVID, pneumonia, and mucus-risk cue.
+              Run chest X-ray AI prediction for COVID-19, Viral Pneumonia, and Normal scans.
             </p>
           </button>
 

@@ -144,7 +144,7 @@ export default function PatientDashboard() {
             <p className="text-xs text-teal-700 font-semibold uppercase">Module</p>
             <h3 className="text-xl font-semibold mt-1">AI Analysis</h3>
             <p className="text-slate-600 mt-2">
-              Detect COVID, pneumonia patterns, and estimated mucus risk indicators.
+              Classify uploaded X-rays as COVID-19, Viral Pneumonia, or Normal with risk cues.
             </p>
           </button>
         </div>

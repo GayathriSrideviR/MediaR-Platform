@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_BASE } from "../config/api";
+import { buildXrayFormData } from "../utils/xrayAnalysis";
 
 export default function UploadXray() {
   const [file, setFile] = useState(null);
@@ -40,17 +41,14 @@ export default function UploadXray() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("patient_id", patientId);
-
     try {
       setLoading(true);
+      const formData = await buildXrayFormData(file, patientId);
       const res = await axios.post(`${API_BASE}/api/ai/predict`, formData);
       setResult(res.data);
     } catch (error) {
       console.log(error);
-      alert("Upload failed");
+      alert(error.response?.data?.message || error.message || "Upload failed");
     } finally {
       setLoading(false);
     }
